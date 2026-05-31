@@ -17,6 +17,7 @@ Products are demo purchasable items or plan products.
 
 Rules:
 
+- MVP product catalog is seeded in PostgreSQL and addressed by unique slug.
 - Inactive products cannot be added to cart.
 - Backend prices are authoritative.
 - Order items snapshot product name, metadata, price, currency, FX, and checkout amount.

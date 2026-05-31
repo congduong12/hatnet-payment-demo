@@ -145,9 +145,10 @@ application foundation added.
 The first app surface is intentionally narrow:
 
 - `apps/api`: NestJS API with `GET /health`.
-- `apps/web`: React + Vite shell for the learning lab.
+- `apps/web`: React + Vite shell with backend-loaded product catalog.
 - `docker-compose.yml`: local PostgreSQL for persisted app state.
-- `apps/api/src/database`: TypeORM connection, migrations, and DB health proof.
+- `apps/api/src/database`: TypeORM connection, migrations, DB health proof, and
+  seeded product catalog data.
 - `docs/product/`: product contracts derived from `SPEC.md`.
 - `docs/stories/high-risk/US-001-project-foundation/`: foundation story and proof expectations.
 
@@ -182,6 +183,15 @@ Run both app surfaces:
 pnpm dev
 ```
 
+Run the full local stack for manual testing:
+
+```bash
+pnpm dev:local
+```
+
+This starts local PostgreSQL with Docker, runs pending TypeORM migrations, and
+then starts both the NestJS API and React web app.
+
 Run one surface:
 
 ```bash
@@ -209,6 +219,8 @@ Smoke-check the API after `pnpm dev:api` starts:
 ```bash
 curl http://localhost:3000/health
 curl http://localhost:3000/health/db
+curl http://localhost:3000/products
+curl http://localhost:3000/products/pro-plan
 curl -i http://localhost:3000/me
 ```
 

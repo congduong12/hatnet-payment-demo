@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "packageManager": "pnpm@10.32.1",
   "scripts": {
+    "dev:local": "docker compose up -d postgres && pnpm db:migrate && pnpm dev",
     "dev": "pnpm --parallel --filter @hatnet/api --filter @hatnet/web dev",
     "dev:api": "pnpm --filter @hatnet/api dev",
     "dev:web": "pnpm --filter @hatnet/web dev",

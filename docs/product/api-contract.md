@@ -32,6 +32,7 @@ Expected behavior:
 
 - Only active products are returned for normal user purchase flows.
 - Product prices are display information until checkout; backend recalculates during checkout.
+- Product responses are sourced from PostgreSQL seed/catalog data and returned as camelCase API fields.
 
 ## Cart
 

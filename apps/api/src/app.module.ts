@@ -4,11 +4,12 @@ import { ClerkAuthService } from './auth/clerk-auth.service.js';
 import { DatabaseModule } from './database/database.module.js';
 import { DatabaseHealthController } from './database/database-health.controller.js';
 import { HealthController } from './health.controller.js';
+import { ProductsModule } from './products/products.module.js';
 import { MeController } from './users/me.controller.js';
 import { UsersModule } from './users/users.module.js';
 
 @Module({
-  imports: [DatabaseModule, UsersModule],
+  imports: [DatabaseModule, UsersModule, ProductsModule],
   controllers: [HealthController, DatabaseHealthController, AuthController, MeController],
   providers: [ClerkAuthService],
 })

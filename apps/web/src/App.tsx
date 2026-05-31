@@ -1,5 +1,5 @@
 import { Show, SignInButton, SignUpButton, UserButton, useAuth } from '@clerk/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
 
@@ -24,6 +24,22 @@ type SyncState =
   | { status: 'loading'; message: string }
   | { status: 'success'; message: string }
   | { status: 'error'; message: string };
+
+type ProductSummary = {
+  id: string;
+  name: string;
+  slug: string;
+  shortDescription: string;
+  productType: 'ONE_TIME' | 'PLAN';
+  displayPrice: string;
+  category: string;
+  tags: string[];
+};
+
+type CatalogState =
+  | { status: 'loading'; products: ProductSummary[]; message: string }
+  | { status: 'success'; products: ProductSummary[]; message: string }
+  | { status: 'error'; products: ProductSummary[]; message: string };
 
 export function App({ isClerkConfigured = true }: AppProps) {
   return (
@@ -66,17 +82,19 @@ export function App({ isClerkConfigured = true }: AppProps) {
         </article>
       </section>
 
-      <section className="phase-panel">
-        <h2>MVP build path</h2>
-        <ol>
-          {phases.map((phase) => (
-            <li key={phase}>{phase}</li>
-          ))}
-        </ol>
-      </section>
-    </main>
-  );
-}
+        <section className="phase-panel">
+          <h2>MVP build path</h2>
+          <ol>
+            {phases.map((phase) => (
+              <li key={phase}>{phase}</li>
+            ))}
+          </ol>
+        </section>
+
+        <ProductCatalog />
+      </main>
+    );
+  }
 
 function AuthControls({ isClerkConfigured }: { isClerkConfigured: boolean }) {
   if (!isClerkConfigured) {
@@ -105,6 +123,81 @@ function AuthControls({ isClerkConfigured }: { isClerkConfigured: boolean }) {
         <UserButton />
       </Show>
     </div>
+  );
+}
+
+function ProductCatalog() {
+  const [catalogState, setCatalogState] = useState<CatalogState>({
+    status: 'loading',
+    products: [],
+    message: 'Loading products...',
+  });
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadProducts() {
+      try {
+        const response = await fetch(`${apiBaseUrl}/products`);
+
+        if (!response.ok) {
+          throw new Error(`Product API returned ${response.status}`);
+        }
+
+        const body = (await response.json()) as { products?: ProductSummary[] };
+        const products = body.products ?? [];
+
+        if (!isMounted) {
+          return;
+        }
+
+        setCatalogState({
+          status: 'success',
+          products,
+          message: products.length > 0 ? 'Products loaded from the backend.' : 'No active products yet.',
+        });
+      } catch {
+        if (!isMounted) {
+          return;
+        }
+
+        setCatalogState({
+          status: 'error',
+          products: [],
+          message: 'Product API is not reachable yet.',
+        });
+      }
+    }
+
+    void loadProducts();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  return (
+    <section className="catalog-panel" aria-labelledby="catalog-heading">
+      <div className="section-heading">
+        <p className="label">Product catalog</p>
+        <h2 id="catalog-heading">Backend-seeded products</h2>
+        <p>{catalogState.message}</p>
+      </div>
+
+      {catalogState.status === 'success' && catalogState.products.length > 0 ? (
+        <div className="product-grid">
+          {catalogState.products.map((product) => (
+            <article key={product.id} className="product-card">
+              <span>{product.category}</span>
+              <h3>{product.name}</h3>
+              <p>{product.shortDescription}</p>
+              <strong>{product.displayPrice}</strong>
+              <small>{product.productType === 'PLAN' ? 'Plan product' : 'One-time product'}</small>
+            </article>
+          ))}
+        </div>
+      ) : null}
+    </section>
   );
 }
 
