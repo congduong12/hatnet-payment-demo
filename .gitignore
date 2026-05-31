@@ -1,0 +1,28 @@
+# Harness durable layer — each project instance generates its own data.
+harness.db
+harness.db-wal
+harness.db-shm
+
+# Rust build output for harness tooling.
+target/
+dist/
+
+# Downloaded Harness CLI binary for installed project instances.
+scripts/bin/harness-cli
+
+# Dependencies and build outputs.
+node_modules/
+apps/*/node_modules/
+apps/*/dist/
+apps/*/.vite/
+coverage/
+*.tsbuildinfo
+
+# Local environment files and logs.
+.env
+.env.local
+.env.*.local
+*.log
+
+# macOS/editor metadata.
+.DS_Store
