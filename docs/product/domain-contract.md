@@ -9,6 +9,7 @@ Rules:
 - Backend must not trust a `userId` supplied by the client.
 - Internal user lookup is based on a verified auth token.
 - New authenticated users get an internal user record and default Free plan state.
+- Internal users are persisted in PostgreSQL and uniquely mapped by external auth provider plus external auth user id.
 
 ## Product
 

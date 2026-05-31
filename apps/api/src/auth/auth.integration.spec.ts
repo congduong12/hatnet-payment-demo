@@ -1,10 +1,15 @@
 import { INestApplication, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
-import { afterEach, describe, expect, it } from 'vitest';
-import { AppModule } from '../app.module.js';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ClerkAuthGuard } from './clerk-auth.guard.js';
 import type { AuthenticatedRequest } from './auth.types.js';
+import { AuthController } from './auth.controller.js';
+import { ClerkAuthService } from './clerk-auth.service.js';
+import { MeController } from '../users/me.controller.js';
+import { UsersService } from '../users/users.service.js';
+import { UserRepository } from '../users/repositories/user.repository.js';
+import type { UserEntity } from '../users/entities/user.entity.js';
 
 class TestAuthGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
@@ -31,7 +36,16 @@ describe('auth endpoints', () => {
 
   it('rejects /me when authorization is missing', async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
+      controllers: [AuthController, MeController],
+      providers: [
+        ClerkAuthGuard,
+        ClerkAuthService,
+        UsersService,
+        {
+          provide: UserRepository,
+          useValue: createUserRepositoryStub(),
+        },
+      ],
     }).compile();
     const nestApp = moduleRef.createNestApplication();
     app = nestApp;
@@ -42,7 +56,16 @@ describe('auth endpoints', () => {
 
   it('returns verified auth and synced internal user', async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
+      controllers: [AuthController, MeController],
+      providers: [
+        ClerkAuthGuard,
+        ClerkAuthService,
+        UsersService,
+        {
+          provide: UserRepository,
+          useValue: createUserRepositoryStub(),
+        },
+      ],
     })
       .overrideGuard(ClerkAuthGuard)
       .useClass(TestAuthGuard)
@@ -60,7 +83,16 @@ describe('auth endpoints', () => {
 
   it('syncs a user without trusting client-supplied user id', async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
+      controllers: [AuthController, MeController],
+      providers: [
+        ClerkAuthGuard,
+        ClerkAuthService,
+        UsersService,
+        {
+          provide: UserRepository,
+          useValue: createUserRepositoryStub(),
+        },
+      ],
     })
       .overrideGuard(ClerkAuthGuard)
       .useClass(TestAuthGuard)
@@ -78,3 +110,32 @@ describe('auth endpoints', () => {
     expect(response.body.user.externalAuthUserId).not.toBe('malicious_client_user');
   });
 });
+
+function createUserRepositoryStub() {
+  const usersByExternalId = new Map<string, UserEntity>();
+
+  return {
+    findByExternalAuth: vi.fn(async (_provider: 'clerk', externalAuthUserId: string) => {
+      return usersByExternalId.get(externalAuthUserId) ?? null;
+    }),
+    save: vi.fn(async (payload: Partial<UserEntity>) => {
+      const existing = payload.externalAuthUserId
+        ? usersByExternalId.get(payload.externalAuthUserId)
+        : undefined;
+      const now = new Date('2026-06-01T00:00:00.000Z');
+      const user = {
+        id: existing?.id ?? '11111111-1111-1111-1111-111111111111',
+        externalAuthProvider: payload.externalAuthProvider ?? existing?.externalAuthProvider ?? 'clerk',
+        externalAuthUserId: payload.externalAuthUserId ?? existing?.externalAuthUserId ?? 'user_test_123',
+        email: payload.email ?? existing?.email ?? null,
+        name: payload.name ?? existing?.name ?? null,
+        avatarUrl: payload.avatarUrl ?? existing?.avatarUrl ?? null,
+        currentPlan: payload.currentPlan ?? existing?.currentPlan ?? 'FREE',
+        createdAt: existing?.createdAt ?? now,
+        updatedAt: now,
+      } as UserEntity;
+      usersByExternalId.set(user.externalAuthUserId, user);
+      return user;
+    }),
+  };
+}

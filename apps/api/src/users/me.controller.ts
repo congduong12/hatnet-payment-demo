@@ -10,14 +10,14 @@ export class MeController {
 
   @Get()
   @UseGuards(ClerkAuthGuard)
-  me(@CurrentAuth() auth: VerifiedAuth) {
+  async me(@CurrentAuth() auth: VerifiedAuth) {
     return {
       auth: {
         externalAuthProvider: auth.externalAuthProvider,
         externalAuthUserId: auth.externalAuthUserId,
         sessionId: auth.sessionId,
       },
-      user: this.usersService.syncFromAuth(auth),
+      user: await this.usersService.syncFromAuth(auth),
     };
   }
 }

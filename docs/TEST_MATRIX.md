@@ -21,6 +21,7 @@ implemented until tests or validation evidence exist.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | US-001 | Project foundation: NestJS API and React app can start and expose smoke proof | yes | yes | no | yes | implemented | `pnpm check`; `pnpm test`; `pnpm build`; `curl -s http://localhost:3000/health`; web shell covered by component test/build, browser E2E not yet run; `docs/stories/high-risk/US-001-project-foundation/` |
 | US-002 | Auth and internal user sync: React Clerk UI and NestJS verified user boundary | yes | yes | no | yes | implemented | `pnpm check`; `pnpm test`; `pnpm build`; `curl http://localhost:3000/me` returned `401` without token; live Clerk browser login not run because no real keys in repo; `docs/stories/high-risk/US-002-auth-user-sync/` |
+| US-003 | Database and repository foundation: Docker Postgres, TypeORM migrations, BaseRepository, and persisted users | yes | yes | no | yes | implemented | `docker compose up -d postgres`; `pnpm db:migrate`; `pnpm check`; `pnpm test`; `pnpm build`; `curl -s http://localhost:3000/health/db`; `docker compose exec -T postgres psql -U hatnet -d hatnet_demo -c "\\dt" -c "\\d users"`; no browser E2E required for DB foundation; `docs/stories/high-risk/US-003-database-repository-foundation/` |
 
 ## Evidence Rules
 

@@ -11,9 +11,9 @@ export class AuthController {
   @Post('sync-user')
   @HttpCode(200)
   @UseGuards(ClerkAuthGuard)
-  syncUser(@CurrentAuth() auth: VerifiedAuth) {
+  async syncUser(@CurrentAuth() auth: VerifiedAuth) {
     return {
-      user: this.usersService.syncFromAuth(auth),
+      user: await this.usersService.syncFromAuth(auth),
     };
   }
 }

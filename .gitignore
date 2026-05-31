@@ -26,3 +26,4 @@ coverage/
 
 # macOS/editor metadata.
 .DS_Store
+.idea/

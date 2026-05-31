@@ -146,6 +146,8 @@ The first app surface is intentionally narrow:
 
 - `apps/api`: NestJS API with `GET /health`.
 - `apps/web`: React + Vite shell for the learning lab.
+- `docker-compose.yml`: local PostgreSQL for persisted app state.
+- `apps/api/src/database`: TypeORM connection, migrations, and DB health proof.
 - `docs/product/`: product contracts derived from `SPEC.md`.
 - `docs/stories/high-risk/US-001-project-foundation/`: foundation story and proof expectations.
 
@@ -187,6 +189,13 @@ pnpm dev:api
 pnpm dev:web
 ```
 
+Start the local database and run migrations:
+
+```bash
+docker compose up -d postgres
+pnpm db:migrate
+```
+
 Validate the repo:
 
 ```bash
@@ -199,6 +208,7 @@ Smoke-check the API after `pnpm dev:api` starts:
 
 ```bash
 curl http://localhost:3000/health
+curl http://localhost:3000/health/db
 curl -i http://localhost:3000/me
 ```
 
