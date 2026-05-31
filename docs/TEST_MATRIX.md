@@ -20,6 +20,7 @@ implemented until tests or validation evidence exist.
 | Story | Contract | Unit | Integration | E2E | Platform | Status | Evidence |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | US-001 | Project foundation: NestJS API and React app can start and expose smoke proof | yes | yes | no | yes | implemented | `pnpm check`; `pnpm test`; `pnpm build`; `curl -s http://localhost:3000/health`; web shell covered by component test/build, browser E2E not yet run; `docs/stories/high-risk/US-001-project-foundation/` |
+| US-002 | Auth and internal user sync: React Clerk UI and NestJS verified user boundary | yes | yes | no | yes | implemented | `pnpm check`; `pnpm test`; `pnpm build`; `curl http://localhost:3000/me` returned `401` without token; live Clerk browser login not run because no real keys in repo; `docs/stories/high-risk/US-002-auth-user-sync/` |
 
 ## Evidence Rules
 

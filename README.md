@@ -199,6 +199,13 @@ Smoke-check the API after `pnpm dev:api` starts:
 
 ```bash
 curl http://localhost:3000/health
+curl -i http://localhost:3000/me
+```
+
+`GET /me` and `POST /auth/sync-user` require a Clerk session token:
+
+```bash
+Authorization: Bearer <clerk-session-token>
 ```
 
 ## Repository Structure

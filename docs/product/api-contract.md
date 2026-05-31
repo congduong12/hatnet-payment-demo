@@ -17,6 +17,10 @@ Expected behavior:
 - Invalid or expired token returns `401`.
 - Authenticated but unauthorized access returns `403`.
 - First sync creates an internal user record.
+- Cross-origin frontend requests send the Clerk session token in the
+  `Authorization: Bearer <token>` header.
+- Backend derives identity from the verified Clerk token and ignores any
+  client-supplied `userId`.
 
 ## Products
 

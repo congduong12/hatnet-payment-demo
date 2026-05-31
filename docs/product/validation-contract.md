@@ -24,6 +24,8 @@ Required unit coverage areas:
 Required integration coverage areas:
 
 - Authenticated endpoint rejects missing/invalid token.
+- Authenticated endpoint derives user identity from verified Clerk auth, not
+  request body user IDs.
 - Product inactive cannot be added to cart.
 - Checkout creates order, order items, payment attempt, and point reservation atomically.
 - payOS webhook success marks payment/order paid idempotently.
