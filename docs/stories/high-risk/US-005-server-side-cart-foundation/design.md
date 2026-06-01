@@ -23,6 +23,15 @@ Quantity is clamped by validation, not silently adjusted:
 - minimum: 1
 - maximum: 10
 - adding an existing item increments quantity and rejects values above 10
+- add-item increments are performed as a PostgreSQL upsert so concurrent
+  requests cannot lose increments or leak unique-constraint errors
+
+## Boundary Validation
+
+Cart mutation IDs are parsed before database queries:
+
+- `productId` must be a valid UUID before product lookup.
+- `itemId` route params must be valid UUIDs before cart item lookup.
 
 ## Totals
 

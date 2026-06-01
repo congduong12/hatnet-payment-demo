@@ -1,4 +1,5 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { z } from 'zod';
 import type { VerifiedAuth } from '../auth/auth.types.js';
 import { ProductRepository } from '../products/repositories/product.repository.js';
 import { UsersService } from '../users/users.service.js';
@@ -10,6 +11,7 @@ import type { CartItemEntity } from './entities/cart-item.entity.js';
 
 const MIN_QUANTITY = 1;
 const MAX_QUANTITY = 10;
+const UUID_SCHEMA = z.uuid();
 
 @Injectable()
 export class CartService {
@@ -34,24 +36,20 @@ export class CartService {
     }
 
     const cart = await this.getOrCreateActiveCart(auth);
-    const existingItem = await this.cartRepository.findItem(cart.id, product.id);
-    const nextQuantity = (existingItem?.quantity ?? 0) + quantity;
-    this.assertQuantity(nextQuantity);
+    const added = await this.cartRepository.addItemQuantity(cart.id, product.id, quantity, MAX_QUANTITY);
 
-    await this.cartRepository.saveItem({
-      id: existingItem?.id,
-      cartId: cart.id,
-      productId: product.id,
-      quantity: nextQuantity,
-    });
+    if (!added) {
+      throw new BadRequestException(`quantity must be between ${MIN_QUANTITY} and ${MAX_QUANTITY}`);
+    }
 
     return this.toSummary(cart);
   }
 
   async updateItem(auth: VerifiedAuth, itemId: string, body: UpdateCartItemBody): Promise<CartSummary> {
+    const parsedItemId = this.parseUuid(itemId, 'itemId');
     const quantity = this.parseQuantity(body.quantity);
     const cart = await this.getOrCreateActiveCart(auth);
-    const item = await this.cartRepository.findItemById(cart.id, itemId);
+    const item = await this.cartRepository.findItemById(cart.id, parsedItemId);
 
     if (!item) {
       throw new NotFoundException('Cart item not found');
@@ -66,8 +64,9 @@ export class CartService {
   }
 
   async removeItem(auth: VerifiedAuth, itemId: string): Promise<CartSummary> {
+    const parsedItemId = this.parseUuid(itemId, 'itemId');
     const cart = await this.getOrCreateActiveCart(auth);
-    const item = await this.cartRepository.findItemById(cart.id, itemId);
+    const item = await this.cartRepository.findItemById(cart.id, parsedItemId);
 
     if (!item) {
       throw new NotFoundException('Cart item not found');
@@ -85,8 +84,7 @@ export class CartService {
 
   private async getOrCreateActiveCart(auth: VerifiedAuth): Promise<CartEntity> {
     const user = await this.usersService.syncFromAuth(auth);
-    const existing = await this.cartRepository.findActiveByUserId(user.id);
-    return existing ?? this.cartRepository.createActiveCart(user.id);
+    return this.cartRepository.getOrCreateActiveCart(user.id);
   }
 
   private async toSummary(cart: CartEntity): Promise<CartSummary> {
@@ -121,11 +119,21 @@ export class CartService {
   }
 
   private parseProductId(value: unknown): string {
+    return this.parseUuid(value, 'productId');
+  }
+
+  private parseUuid(value: unknown, field: string): string {
     if (typeof value !== 'string' || value.trim().length === 0) {
-      throw new BadRequestException('productId is required');
+      throw new BadRequestException(`${field} is required`);
     }
 
-    return value;
+    const normalized = value.trim();
+
+    if (!UUID_SCHEMA.safeParse(normalized).success) {
+      throw new BadRequestException(`${field} must be a valid UUID`);
+    }
+
+    return normalized;
   }
 
   private parseQuantity(value: unknown): number {

@@ -5,16 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b46d681c-8595-4702-abdb-67a57e127e61" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/src/app.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/app.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/src/database/typeorm-options.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/database/typeorm-options.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/src/products/repositories/product.repository.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/products/repositories/product.repository.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/styles.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/src/cart/cart.service.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/cart/cart.service.spec.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/src/cart/cart.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/cart/cart.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/src/cart/repositories/cart.repository.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/cart/repositories/cart.repository.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/TEST_MATRIX.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/TEST_MATRIX.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/product/api-contract.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/product/api-contract.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/product/domain-contract.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/product/domain-contract.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/stories/high-risk/US-005-server-side-cart-foundation/design.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/stories/high-risk/US-005-server-side-cart-foundation/design.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/stories/high-risk/US-005-server-side-cart-foundation/validation.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/stories/high-risk/US-005-server-side-cart-foundation/validation.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,7 +111,7 @@
       <workItem from="1780250502165" duration="6000" />
       <workItem from="1780283825518" duration="19000" />
       <workItem from="1780301736934" duration="17000" />
-      <workItem from="1780301938724" duration="4335000" />
+      <workItem from="1780301938724" duration="6858000" />
     </task>
     <servers />
   </component>
