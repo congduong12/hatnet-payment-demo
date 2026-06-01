@@ -41,6 +41,12 @@ type CatalogState =
   | { status: 'success'; products: ProductSummary[]; message: string }
   | { status: 'error'; products: ProductSummary[]; message: string };
 
+type CartActionState =
+  | { status: 'idle'; message: string }
+  | { status: 'loading'; message: string }
+  | { status: 'success'; message: string }
+  | { status: 'error'; message: string };
+
 export function App({ isClerkConfigured = true }: AppProps) {
   return (
     <main className="app-shell">
@@ -91,7 +97,7 @@ export function App({ isClerkConfigured = true }: AppProps) {
           </ol>
         </section>
 
-        <ProductCatalog />
+        <ProductCatalog isClerkConfigured={isClerkConfigured} />
       </main>
     );
   }
@@ -126,7 +132,7 @@ function AuthControls({ isClerkConfigured }: { isClerkConfigured: boolean }) {
   );
 }
 
-function ProductCatalog() {
+function ProductCatalog({ isClerkConfigured }: { isClerkConfigured: boolean }) {
   const [catalogState, setCatalogState] = useState<CatalogState>({
     status: 'loading',
     products: [],
@@ -193,11 +199,67 @@ function ProductCatalog() {
               <p>{product.shortDescription}</p>
               <strong>{product.displayPrice}</strong>
               <small>{product.productType === 'PLAN' ? 'Plan product' : 'One-time product'}</small>
+              {isClerkConfigured ? <CartActions product={product} /> : null}
             </article>
           ))}
         </div>
       ) : null}
     </section>
+  );
+}
+
+function CartActions({ product }: { product: ProductSummary }) {
+  return (
+    <Show when="signed-in">
+      <AddToCartButton product={product} />
+    </Show>
+  );
+}
+
+function AddToCartButton({ product }: { product: ProductSummary }) {
+  const { getToken } = useAuth();
+  const [cartActionState, setCartActionState] = useState<CartActionState>({
+    status: 'idle',
+    message: 'Add to cart',
+  });
+
+  async function addToCart() {
+    setCartActionState({ status: 'loading', message: 'Adding...' });
+    const token = await getToken();
+
+    if (!token) {
+      setCartActionState({ status: 'error', message: 'No Clerk session token.' });
+      return;
+    }
+
+    const response = await fetch(`${apiBaseUrl}/cart/items`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        productId: product.id,
+        quantity: 1,
+      }),
+    });
+
+    if (!response.ok) {
+      setCartActionState({ status: 'error', message: `Cart failed (${response.status}).` });
+      return;
+    }
+
+    const body = (await response.json()) as { cart?: { itemCount?: number } };
+    setCartActionState({
+      status: 'success',
+      message: `Cart items: ${body.cart?.itemCount ?? 1}`,
+    });
+  }
+
+  return (
+    <button type="button" data-status={cartActionState.status} onClick={() => void addToCart()}>
+      {cartActionState.message}
+    </button>
   );
 }
 

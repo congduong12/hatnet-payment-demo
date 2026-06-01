@@ -240,6 +240,27 @@ h1 {
   font-size: 1.65rem;
 }
 
+.product-card button {
+  margin-top: 16px;
+  border: 0;
+  border-radius: 999px;
+  background: #111827;
+  color: #fffaf1;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 800;
+  padding: 11px 16px;
+}
+
+.product-card button[data-status='success'] {
+  background: #166534;
+}
+
+.product-card button[data-status='error'] {
+  background: #991b1b;
+}
+
 @media (max-width: 760px) {
   .app-shell {
     padding: 48px 0;

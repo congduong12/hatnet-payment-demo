@@ -26,4 +26,12 @@ export class ProductRepository extends BaseRepository<ProductEntity> {
       .andWhere('product.isActive = :isActive', { isActive: true })
       .getOne();
   }
+
+  async findActiveById(id: string): Promise<ProductEntity | null> {
+    return this.newQuery()
+      .builder()
+      .andWhere('product.id = :id', { id })
+      .andWhere('product.isActive = :isActive', { isActive: true })
+      .getOne();
+  }
 }

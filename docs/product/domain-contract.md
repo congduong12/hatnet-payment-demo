@@ -29,6 +29,7 @@ MVP uses a server-side active cart per authenticated user.
 
 Rules:
 
+- Active carts are persisted in PostgreSQL and owned by internal user id.
 - Quantity minimum is 1.
 - Quantity maximum is 10 per item.
 - Adding the same product increments quantity.

@@ -222,6 +222,7 @@ curl http://localhost:3000/health/db
 curl http://localhost:3000/products
 curl http://localhost:3000/products/pro-plan
 curl -i http://localhost:3000/me
+curl -i http://localhost:3000/cart
 ```
 
 `GET /me` and `POST /auth/sync-user` require a Clerk session token:
