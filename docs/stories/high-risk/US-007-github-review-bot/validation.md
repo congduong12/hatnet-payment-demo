@@ -40,8 +40,11 @@ Local proof completed:
   path.
 - `pnpm build` passed.
 
-Pending platform proof:
+Platform proof completed:
 
-- Enable Codex code review for this repository.
-- Open a small PR and comment `@codex review`.
-- Confirm Codex reacts and posts a standard GitHub review.
+- PR #2 confirmed `Pull Request Checks / checks (pull_request)` passed.
+- PR #2 comment `@codex review` was received by `chatgpt-codex-connector`.
+- `chatgpt-codex-connector` posted `Codex Review: Didn't find any major
+  issues.`
+- PR #2 was closed without merge and the smoke branch was deleted to avoid
+  adding test-only files to `master`.
