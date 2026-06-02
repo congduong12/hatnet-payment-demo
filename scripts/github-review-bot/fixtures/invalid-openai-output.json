@@ -1,0 +1,10 @@
+{
+  "summary": "Missing required fields should fail validation.",
+  "findings": [
+    {
+      "severity": "P1",
+      "category": "unknown",
+      "title": "Invalid category"
+    }
+  ]
+}

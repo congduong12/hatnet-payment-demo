@@ -1,0 +1,48 @@
+{
+  "pullRequest": {
+    "number": 7,
+    "title": "Add checkout endpoint",
+    "user": { "login": "contributor" },
+    "base": { "ref": "master", "repo": { "full_name": "congduong12/hatnet-payment-demo" } },
+    "head": { "ref": "feature/checkout", "repo": { "full_name": "congduong12/hatnet-payment-demo" } }
+  },
+  "files": [
+    {
+      "filename": "apps/api/src/checkout/repositories/checkout.repository.ts",
+      "status": "modified",
+      "additions": 12,
+      "deletions": 1,
+      "patch": "@@ -53,6 +53,12 @@ export class CheckoutRepository {\\n+  const cart = await manager.findOne(CartEntity, { where: { id: cartId } });\\n+  const items = await manager.find(CartItemEntity, { where: { cartId } });\\n+  cart.status = 'CHECKED_OUT';\\n+  await manager.save(cart);\\n+  return items;\\n }"
+    },
+    {
+      "filename": "pnpm-lock.yaml",
+      "status": "modified",
+      "additions": 200,
+      "deletions": 100,
+      "patch": "@@ lockfile noise @@"
+    }
+  ],
+  "mockReview": {
+    "summary": "The PR adds checkout snapshotting but may not coordinate cart item writes.",
+    "riskLevel": "high",
+    "findings": [
+      {
+        "severity": "P1",
+        "category": "hidden_bug",
+        "file": "apps/api/src/checkout/repositories/checkout.repository.ts",
+        "line": 53,
+        "title": "Checkout can snapshot a cart while item writes still race",
+        "evidence": "The patch reads cart items by cartId and then marks the cart CHECKED_OUT, but there is no visible coordination with cart item mutation paths.",
+        "impact": "A concurrent add/update/remove can change cart_items after the snapshot read, creating an order that does not match the final cart state.",
+        "recommendation": "Coordinate checkout with cart mutations by locking/checking cart item writes or item rows in the same transaction before creating the immutable order snapshot.",
+        "confidence": 0.86
+      }
+    ],
+    "requiredChecks": [
+      "Add an integration test for checkout racing with cart item mutation."
+    ],
+    "harnessNotes": [
+      "Update the US-006 validation evidence if checkout concurrency behavior changes."
+    ]
+  }
+}

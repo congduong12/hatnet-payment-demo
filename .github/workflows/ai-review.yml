@@ -1,0 +1,46 @@
+name: AI Review
+
+on:
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Pull request number to review
+        required: true
+        type: number
+
+permissions:
+  contents: read
+  pull-requests: read
+  issues: write
+
+jobs:
+  improve:
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event.issue.pull_request &&
+        startsWith(github.event.comment.body, '/improve')
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout default branch
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run AI review
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5.5' }}
+          OPENAI_REASONING_EFFORT: ${{ vars.OPENAI_REASONING_EFFORT || 'medium' }}
+          AI_REVIEW_ALLOW_FORKS: ${{ vars.AI_REVIEW_ALLOW_FORKS || 'false' }}
+          WORKFLOW_DISPATCH_PR_NUMBER: ${{ inputs.pr_number }}
+        run: node scripts/github-review-bot/review-pr.mjs
