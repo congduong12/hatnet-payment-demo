@@ -35,5 +35,18 @@ pnpm build
 
 ## Acceptance Evidence
 
-Add results after implementation verification.
-
+- `pnpm --filter @hatnet/api test` passed checkout money, repository, and
+  service tests.
+- `pnpm --filter @hatnet/api check` passed backend type checking.
+- `pnpm --filter @hatnet/api build` passed backend production build.
+- `docker compose up -d postgres` confirmed local PostgreSQL was running.
+- `pnpm db:migrate` completed with no pending migrations after
+  `CreateOrdersTables1717465600000` was applied.
+- PostgreSQL smoke created an authenticated user's active cart with `pro-plan`,
+  called `CheckoutRepository.prepareCheckout`, and verified:
+  - order payable amount `249000` VND from `999` USD cents at
+    `USD_TO_VND_RATE=24850`;
+  - persisted order item snapshot has `checkout_currency='VND'` and line amount
+    `249000`;
+  - source cart moved to `CHECKED_OUT`;
+  - smoke rows were cleaned up afterwards.

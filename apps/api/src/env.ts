@@ -7,6 +7,7 @@ const envSchema = z.object({
     .string()
     .url()
     .default('postgres://hatnet:hatnet_dev_password@localhost:5432/hatnet_demo'),
+  USD_TO_VND_RATE: z.coerce.number().int().positive().default(24850),
   CLERK_SECRET_KEY: z.string().optional(),
   CLERK_PUBLISHABLE_KEY: z.string().optional(),
   CLERK_AUTHORIZED_PARTIES: z
