@@ -49,16 +49,11 @@ export class CartService {
     const parsedItemId = this.parseUuid(itemId, 'itemId');
     const quantity = this.parseQuantity(body.quantity);
     const cart = await this.getOrCreateActiveCart(auth);
-    const item = await this.cartRepository.findItemById(cart.id, parsedItemId);
+    const updated = await this.cartRepository.updateItemQuantity(cart.id, parsedItemId, quantity);
 
-    if (!item) {
+    if (!updated) {
       throw new NotFoundException('Cart item not found');
     }
-
-    await this.cartRepository.saveItem({
-      ...item,
-      quantity,
-    });
 
     return this.toSummary(cart);
   }
@@ -66,13 +61,12 @@ export class CartService {
   async removeItem(auth: VerifiedAuth, itemId: string): Promise<CartSummary> {
     const parsedItemId = this.parseUuid(itemId, 'itemId');
     const cart = await this.getOrCreateActiveCart(auth);
-    const item = await this.cartRepository.findItemById(cart.id, parsedItemId);
+    const removed = await this.cartRepository.removeItemById(cart.id, parsedItemId);
 
-    if (!item) {
+    if (!removed) {
       throw new NotFoundException('Cart item not found');
     }
 
-    await this.cartRepository.removeItem(item);
     return this.toSummary(cart);
   }
 

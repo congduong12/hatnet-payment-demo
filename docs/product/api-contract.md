@@ -48,6 +48,8 @@ Expected behavior:
 - Product inactive, invalid quantity, or empty checkout attempts are rejected.
 - Cart endpoints require verified auth and derive the active cart from the internal synced user.
 - `POST /cart/items` accepts `productId` and `quantity`; adding the same product increments quantity up to the MVP limit of 10.
+- Cart write endpoints must not mutate a cart after checkout has begun closing
+  it or after it has moved to `CHECKED_OUT`.
 
 ## Checkout
 

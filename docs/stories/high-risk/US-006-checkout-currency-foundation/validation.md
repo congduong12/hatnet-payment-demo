@@ -39,6 +39,11 @@ pnpm build
   service tests.
 - `pnpm --filter @hatnet/api check` passed backend type checking.
 - `pnpm --filter @hatnet/api build` passed backend production build.
+- `pnpm --filter @hatnet/api test` now includes cart repository coordination
+  coverage proving add/update/remove/clear write paths lock and re-check the
+  active cart before mutating `cart_items`.
+- `pnpm check`, `pnpm test`, and `pnpm build` passed after the cart write
+  coordination hardening.
 - `docker compose up -d postgres` confirmed local PostgreSQL was running.
 - `pnpm db:migrate` completed with no pending migrations after
   `CreateOrdersTables1717465600000` was applied.

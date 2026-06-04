@@ -35,6 +35,8 @@ Rules:
 - Adding the same product increments quantity.
 - Empty cart cannot be checked out.
 - Checkout clears or closes the active cart after order creation.
+- Cart item write paths must re-check and lock the active cart before mutating
+  items so a checked-out cart cannot drift from its immutable order snapshot.
 
 ## Order And Payment
 

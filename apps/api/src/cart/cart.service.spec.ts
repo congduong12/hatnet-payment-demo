@@ -115,7 +115,7 @@ describe('CartService', () => {
   });
 
   it('rejects malformed item IDs before querying cart items', async () => {
-    const cartRepository = { findItemById: vi.fn() } as unknown as CartRepository;
+    const cartRepository = { updateItemQuantity: vi.fn() } as unknown as CartRepository;
     const service = new CartService(
       cartRepository,
       { syncFromAuth: vi.fn().mockResolvedValue(user) } as unknown as UsersService,
@@ -123,6 +123,58 @@ describe('CartService', () => {
     );
 
     await expect(service.updateItem(auth, 'not-a-uuid', { quantity: 1 })).rejects.toBeInstanceOf(BadRequestException);
-    expect(cartRepository.findItemById).not.toHaveBeenCalled();
+    expect(cartRepository.updateItemQuantity).not.toHaveBeenCalled();
+  });
+
+  it('updates cart item quantity through the active-cart write path', async () => {
+    const cart = makeCart();
+    const product = makeProduct();
+    const savedItems: CartItemEntity[] = [
+      {
+        id: '44444444-4444-4444-8444-444444444444',
+        cartId: cart.id,
+        productId: product.id,
+        quantity: 3,
+        product,
+      } as CartItemEntity,
+    ];
+    const cartRepository = {
+      getOrCreateActiveCart: vi.fn().mockResolvedValue(cart),
+      updateItemQuantity: vi.fn().mockResolvedValue(true),
+      listItems: vi.fn(async () => savedItems),
+    } as unknown as CartRepository;
+    const service = new CartService(
+      cartRepository,
+      { syncFromAuth: vi.fn().mockResolvedValue(user) } as unknown as UsersService,
+      { findActiveById: vi.fn().mockResolvedValue(product) } as unknown as ProductRepository,
+    );
+
+    const summary = await service.updateItem(auth, '44444444-4444-4444-8444-444444444444', { quantity: 3 });
+
+    expect(cartRepository.updateItemQuantity).toHaveBeenCalledWith(
+      cart.id,
+      '44444444-4444-4444-8444-444444444444',
+      3,
+    );
+    expect(summary.itemCount).toBe(3);
+  });
+
+  it('removes cart items through the active-cart write path', async () => {
+    const cart = makeCart();
+    const cartRepository = {
+      getOrCreateActiveCart: vi.fn().mockResolvedValue(cart),
+      removeItemById: vi.fn().mockResolvedValue(true),
+      listItems: vi.fn(async () => []),
+    } as unknown as CartRepository;
+    const service = new CartService(
+      cartRepository,
+      { syncFromAuth: vi.fn().mockResolvedValue(user) } as unknown as UsersService,
+      { findActiveById: vi.fn().mockResolvedValue(makeProduct()) } as unknown as ProductRepository,
+    );
+
+    const summary = await service.removeItem(auth, '44444444-4444-4444-8444-444444444444');
+
+    expect(cartRepository.removeItemById).toHaveBeenCalledWith(cart.id, '44444444-4444-4444-8444-444444444444');
+    expect(summary.itemCount).toBe(0);
   });
 });
